@@ -5,16 +5,26 @@ import { dracula } from 'react-syntax-highlighter/dist/esm/styles/hljs';
 
 
 const mapText = (text: string) => {
-  const textSplitedGanadores = text.split('Ganadores:')[1]
-  const ganadores = textSplitedGanadores.split('Observaciones:')[0].replaceAll('\n', '').trim()
-  const textSplitedObservaciones = text.split('Observaciones:')[1].trim()
-  const bote = text.split('bote total')[1].split('€.')[0].split('de premios de')[1].trim()
+  // Extraer los ganadores
+  const ganadoresRegex = /Ganador(es)?:\s*(.*?)\n/m;
+  const ganadoresMatch = text.match(ganadoresRegex);
+  const ganadores = ganadoresMatch ? ganadoresMatch[2].trim() : "";
+
+  // Extraer el bote total
+  const boteTotalRegex = /bote total (de|en) premios de (\d+\.?\d*)€/i;
+  const boteTotalMatch = text.match(boteTotalRegex);
+  const boteTotal = boteTotalMatch ? boteTotalMatch[2] : "";
+
+  // Extraer las observaciones
+  const observacionesRegex = /Observaciones:\s*(.*?)$/m;
+  const observacionesMatch = text.match(observacionesRegex);
+  const observaciones = observacionesMatch ? observacionesMatch[1].trim() : "";
 
   return {
     ganadores,
-    observaciones: textSplitedObservaciones,
-    bote
-  }
+    bote: boteTotal,
+    observaciones,
+  };
 }
 
 export default function Home() {
@@ -42,10 +52,10 @@ export default function Home() {
         <h1 className="text-xl font-bold text-center">Actualizar torneo</h1>
 
         <textarea className="w-full rounded-xl p-5 bg-zinc-900 text-zinc-400" rows={10} onChange={(event) => handleChange(event)} />
-        
+
         <button
-        className="bg-zinc-50 text-zinc-800 font-semibold px-3 py-1 rounded-md mt-2 mb-8"
-        onClick={() => onClickMapText(text)} >Generar</button>
+          className="bg-zinc-50 text-zinc-800 font-semibold px-3 py-1 rounded-md mt-2 mb-8"
+          onClick={() => onClickMapText(text)} >Generar</button>
 
         <div className='w-full rounded-xl overflow-hidden' >
 
